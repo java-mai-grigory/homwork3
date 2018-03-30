@@ -1,19 +1,20 @@
 package ru.mai.eights.eights;
 
 import lib.Eight;
+import lib.State;
 
-/**
- * Hello world!
- *
- */
+import java.util.ArrayList;
+import java.util.PriorityQueue;
+
+
 public class App 
 {
     public static void main( String[] args )
     {
         int m[][] = {
-                {6, 2, 4},
-                {8, 5, -1},
-                {1, 7,  3}
+                {4, 2, 6},
+                {8, -1, 5},
+                {1, 3,  7}
         };
 
         int sol[][] = {
@@ -25,7 +26,21 @@ public class App
         Eight.setSolution( new Eight(null, sol));
         Eight game = new Eight(null, m);
 
-        System.out.println(game.Heuristic());
+        System.out.println(game.toString());
+
+        PriorityQueue<State> queue = new PriorityQueue<>();
+
+        for(State state : game.getMoves())
+        {
+              queue.add( state );
+        }
+
+        while (!queue.isEmpty())
+        {
+            Eight ei = (Eight)queue.remove();
+            System.out.println(ei);
+            System.out.println (ei.Heuristic() );
+        }
 
     }
 }

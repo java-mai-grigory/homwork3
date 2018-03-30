@@ -1,7 +1,5 @@
 package lib;
 
-import javafx.util.Pair;
-
 import java.security.KeyPair;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -79,7 +77,7 @@ public class Eight extends State {
             nm = new int[size][size];
             for (int i = 0; i < size; i++)
                 nm[i] = m[i].clone();
-            move(nm, x, y, x, y - 1);
+            move(nm, x, y, x, y + 1);
             list.add( new Eight(this, nm));
         }
         if ( isLegal(x, y -1) ) {
@@ -113,7 +111,7 @@ public class Eight extends State {
 
     @Override
 	public int Heuristic() {
-        HashMap<Integer, Pair<Integer, Integer>> map = new HashMap<Integer, Pair<Integer, Integer>>();
+        HashMap<Integer, Pair> map = new HashMap<Integer, Pair>();
         if (solution == null) return 0;
         for (int x = 0; x < solution.m.length; x++)
             for (int y = 0; y < solution.m.length; y++)
@@ -128,8 +126,8 @@ public class Eight extends State {
                 val = m[x][y];
                 if (val > 0)
                 {
-                    sum += Math.abs( map.get(val).getKey() - x);
-                    sum += Math.abs( map.get(val).getValue() - y);
+                    sum += Math.abs( map.get(val).getX() - x);
+                    sum += Math.abs( map.get(val).getY() - y);
                 }
             }
         return sum;
@@ -142,7 +140,7 @@ public class Eight extends State {
 
     private final boolean isLegal(int x, int y) {
         int size = m.length;
-        return (x < 0) ||  (x > size - 1) || (y < 0) || (y > size - 1);
+        return (x >= 0) &&  (x <= size - 1) && (y >= 0) && (y <= size - 1);
     }
 
     private void move(int[][] nm, int x0, int y0, int x, int y)
@@ -161,4 +159,6 @@ public class Eight extends State {
             nm[i] = m[i].clone();
         return nm;
     }
+
+
 }
