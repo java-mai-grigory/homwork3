@@ -1,22 +1,51 @@
 package lib;
 
+import javafx.util.Pair;
+
+import java.security.KeyPair;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 
 public class Eight extends State {
-	protected int m[][];
-	int distance;
+	private int m[][];
+	private int x, y;
 
-    static  Eight solution;
+    private static  Eight solution;
 
-    static void setSolution(Eight sol) {
+    public static void setSolution(Eight sol) {
         solution = sol;
+    }
+
+    public int getX() { return x; };
+    public int getY() { return y; };
+
+    public  String toString()
+    {
+        String str = "";
+        for(int i = 0; i < m.length; i++)
+        {
+            for(int j = 0; j < m.length; j++)
+                str += m[i][j] + "  ";
+            str += "\n";
+        }
+        return str;
     }
 
 
     public Eight(Eight parent, int[][] m) {
         super(parent);
         this.m = m;
+        for(int i = 0; i < m.length; i++)
+            for(int j = 0; j < m.length; j++)
+                if (m[i][j] <= 0 )
+                {
+                    x = i;
+                    y = j;
+                    return;
+                }
+
+        x = y = -1;
     }
 
     @Override
@@ -43,8 +72,38 @@ public class Eight extends State {
 
     @Override
     public ArrayList<State> getMoves() {
+        int[][] nm;
+        int size = m.length;
         ArrayList<State> list = new ArrayList<>();
-        return null;
+        if ( isLegal(x, y + 1) ) {
+            nm = new int[size][size];
+            for (int i = 0; i < size; i++)
+                nm[i] = m[i].clone();
+            move(nm, x, y, x, y - 1);
+            list.add( new Eight(this, nm));
+        }
+        if ( isLegal(x, y -1) ) {
+            nm = new int[size][size];
+            for (int i = 0; i < size; i++)
+                nm[i] = m[i].clone();
+            move(nm, x, y, x, y - 1);
+            list.add( new Eight(this, nm));
+        }
+        if ( isLegal(x + 1, y ) ) {
+            nm = new int[size][size];
+            for (int i = 0; i < size; i++)
+                nm[i] = m[i].clone();
+            move(nm, x, y, x + 1, y );
+            list.add( new Eight(this, nm));
+        }
+        if ( isLegal(x - 1, y) ) {
+            nm = new int[size][size];
+            for (int i = 0; i < size; i++)
+                nm[i] = m[i].clone();
+            move(nm, x, y, x - 1, y );
+            list.add( new Eight(this, nm));
+        }
+        return list;
     }
 
     @Override
@@ -54,8 +113,27 @@ public class Eight extends State {
 
     @Override
 	public int Heuristic() {
-		return 0;
-	}
+        HashMap<Integer, Pair<Integer, Integer>> map = new HashMap<Integer, Pair<Integer, Integer>>();
+        if (solution == null) return 0;
+        for (int x = 0; x < solution.m.length; x++)
+            for (int y = 0; y < solution.m.length; y++)
+            {
+                map.put( solution.m[x][y], new Pair(x, y));
+            }
+        int val;
+        int sum = 0;
+        for (int x = 0; x < m.length; x++)
+            for (int y = 0; y < m.length; y++)
+            {
+                val = m[x][y];
+                if (val > 0)
+                {
+                    sum += Math.abs( map.get(val).getKey() - x);
+                    sum += Math.abs( map.get(val).getValue() - y);
+                }
+            }
+        return sum;
+    }
 
     @Override
 	public int Distance() {
